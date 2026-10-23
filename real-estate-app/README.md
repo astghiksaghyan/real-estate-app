@@ -104,7 +104,8 @@ python app.py
 ```
 
 
-*The backend will start running at `http://localhost:8080`.*
+*The backend will start running at `h
+`.*
 
 ---
 
@@ -122,6 +123,13 @@ cd frontend
 npm install
 
 ```
+2. Generate tailwind.config.js and postcss.config.js
+
+```bash
+npx tailwindcss init -p
+
+```
+
 
 
 3. Start the development server (using Vite):
