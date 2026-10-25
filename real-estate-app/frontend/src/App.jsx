@@ -7,18 +7,6 @@ export default function App() {
     const [loading, setLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
 
-    // // Sample listings (in production, this is fetched from the provided CSV dataset)
-    // useEffect(() => {
-    //     const mockListings = [
-    //         { id: 1, price: 85000, bedrooms: 1, area: 65, location: 'Arabkir', missing: ['Renovation', 'Furniture', 'Balcony'] },
-    //         { id: 2, price: 120000, bedrooms: 2, area: 90, location: 'Kentron', missing: ['Parking', 'Heating System'] },
-    //         { id: 3, price: 65000, bedrooms: 1, area: 40, location: 'Zeytun', missing: ['Furniture', 'Appliances', 'Elevator'] },
-    //         { id: 4, price: 95000, bedrooms: 1, area: 70, location: 'Arabkir', missing: ['Air Conditioner', 'Storage Room'] },
-    //         { id: 5, price: 150000, bedrooms: 3, area: 120, location: 'Kentron', missing: ['Security System'] }
-    //     ];
-    //     setListings(mockListings);
-    // }, []);
-
     // Fetch listings from the Flask backend on component mount
     useEffect(() => {
         fetch('/api/listings')
@@ -40,27 +28,36 @@ export default function App() {
         setAnalysisResult(null);
     };
 
-    const handleAnalyze = () => {
-        if (!missingFeature) return;
+    // Handle clicking the analyze button to request valuation analysis
+    const handleAnalyze = async () => {
+        if (!selectedListing || !missingFeature) return;
+
         setLoading(true);
         setAnalysisResult(null);
 
-        setTimeout(() => {
-            const priceIncreasePercent = Math.floor(Math.random() * 15) + 5;
-            const originalPrice = selectedListing.price;
-            const addedValue = Math.round(originalPrice * (priceIncreasePercent / 100));
-            const newPrice = originalPrice + addedValue;
-
-            setAnalysisResult({
-                bestModel: 'XGBoost Regressor',
-                accuracy: '94.8%',
-                priceIncreasePercent,
-                addedValue,
-                newPrice,
-                recommendation: `Adding "${missingFeature}" to this property will significantly increase its market appeal and valuation.`
+        try {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    listing: selectedListing,
+                    missingFeature: missingFeature,
+                }),
             });
+
+        if (!response.ok) {
+            throw new Error('Server response was not ok');
+        }
+
+        const data = await response.json();
+        setAnalysisResult(data);
+        } catch (error) {
+            console.error('Error analyzing price impact:', error);
+        } finally {
             setLoading(false);
-        }, 1500);
+        }
     };
 
     return (
