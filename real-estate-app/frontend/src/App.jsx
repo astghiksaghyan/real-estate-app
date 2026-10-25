@@ -7,16 +7,31 @@ export default function App() {
     const [loading, setLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState(null);
 
-    // Sample listings (in production, this is fetched from the provided CSV dataset)
+    // // Sample listings (in production, this is fetched from the provided CSV dataset)
+    // useEffect(() => {
+    //     const mockListings = [
+    //         { id: 1, price: 85000, bedrooms: 1, area: 65, location: 'Arabkir', missing: ['Renovation', 'Furniture', 'Balcony'] },
+    //         { id: 2, price: 120000, bedrooms: 2, area: 90, location: 'Kentron', missing: ['Parking', 'Heating System'] },
+    //         { id: 3, price: 65000, bedrooms: 1, area: 40, location: 'Zeytun', missing: ['Furniture', 'Appliances', 'Elevator'] },
+    //         { id: 4, price: 95000, bedrooms: 1, area: 70, location: 'Arabkir', missing: ['Air Conditioner', 'Storage Room'] },
+    //         { id: 5, price: 150000, bedrooms: 3, area: 120, location: 'Kentron', missing: ['Security System'] }
+    //     ];
+    //     setListings(mockListings);
+    // }, []);
+
+    // Fetch listings from the Flask backend on component mount
     useEffect(() => {
-        const mockListings = [
-            { id: 1, price: 85000, rooms: 2, area: 65, location: 'Arabkir', missing: ['Renovation', 'Furniture', 'Balcony'] },
-            { id: 2, price: 120000, rooms: 3, area: 90, location: 'Kentron', missing: ['Parking', 'Heating System'] },
-            { id: 3, price: 65000, rooms: 1, area: 40, location: 'Zeytun', missing: ['Furniture', 'Appliances', 'Elevator'] },
-            { id: 4, price: 95000, rooms: 2, area: 70, location: 'Arabkir', missing: ['Air Conditioner', 'Storage Room'] },
-            { id: 5, price: 150000, rooms: 4, area: 120, location: 'Kentron', missing: ['Security System'] }
-        ];
-        setListings(mockListings);
+        fetch('/api/listings')
+            .then((response) => {
+                const response_a = response.json()
+                return response_a
+            })
+            .then((data) => {
+                if (data && Array.isArray(data)) {
+                    setListings(data);
+                }
+            })
+            .catch((error) => console.error('Error fetching listings:', error));
     }, []);
 
     const handleSelectListing = (listing) => {
@@ -70,7 +85,7 @@ export default function App() {
                                         <span className="text-sm font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">{item.location}</span>
                                         <span className="text-lg font-bold text-green-600">${item.price}</span>
                                     </div>
-                                    <p className="text-gray-700">Rooms: <span className="font-semibold">{item.rooms}</span></p>
+                                    <p className="text-gray-700">Bedrooms: <span className="font-semibold">{item.bedrooms}</span></p>
                                     <p className="text-gray-700">Area: <span className="font-semibold">{item.area} m²</span></p>
                                     <div className="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500">
                                         Click for details and analysis
@@ -92,16 +107,16 @@ export default function App() {
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Property Details</h2>
                                 <div className="space-y-3 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                                    <p className="text-lg">Location: <span className="font-semibold">{selectedListing.location}</span></p>
+                                    <p className="text-lg">Location: <span className="font-semibold">{selectedListing.host_location}</span></p>
                                     <p className="text-lg">Current Price: <span className="font-semibold text-green-600">${selectedListing.price}</span></p>
-                                    <p className="text-lg">Room Count: <span className="font-semibold">{selectedListing.rooms}</span></p>
+                                    <p className="text-lg">Room Count: <span className="font-semibold">{selectedListing.bedrooms}</span></p>
                                     <p className="text-lg">Area: <span className="font-semibold">{selectedListing.area} m²</span></p>
                                 </div>
 
                                 <div className="mt-6">
                                     <h3 className="text-lg font-semibold text-red-600 mb-2">Missing Features:</h3>
                                     <div className="flex flex-wrap gap-2">
-                                        {selectedListing.missing.map((feat, idx) => (
+                                        {selectedListing.missing_amenities.map((feat, idx) => (
                                             <button
                                                 key={idx}
                                                 onClick={() => setMissingFeature(feat)}
