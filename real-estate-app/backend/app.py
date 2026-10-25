@@ -65,7 +65,7 @@ def get_listings():
         records.append(row_dict)
 
     # Replace NaN values with None for safe JSON serialization
-    clean_records = pd.DataFrame(records).where(pd.notnull(pd.DataFrame(records)), 0).to_dict(orient='records')
+    clean_records = pd.DataFrame(records).where(pd.notnull(pd.DataFrame(records)), None).to_dict(orient='records')
     
     return jsonify(clean_records), 200
 
