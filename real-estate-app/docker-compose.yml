@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: real-estate-backend-service
+    ports:
+      - "8080:8080"
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: real-estate-frontend-service
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always

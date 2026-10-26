@@ -143,19 +143,23 @@ npm run dev
 
 ---
 
-## Running with Docker (Alternative Method)
+## Running with Podman Compose
 
-If you prefer using Docker to run the application containers together:
+If you prefer running the application containers using `podman-compose`:
 
-1. Make sure **Docker** and **Docker Compose** are installed and running.
-2. From the root directory of the project, run:
+1. Make sure **podman-compose** is installed in your environment.
+2. From the root directory of the project, build the container images:
 ```bash
-docker-compose up --build
+   podman-compose -f docker-compose.yml build
 
 ```
 
+3. Start the application services in the background:
 
-3. The application services will be built and launched automatically.
+```bash
+podman-compose -f docker-compose.yml up -d
+
+```
 
 ---
 
@@ -168,6 +172,6 @@ docker-compose up --build
 5. Click the **"Սկսել Վերլուծությունը"** (Start Analysis) button to trigger the machine learning models (Linear Regression, Random Forest, XGBoost).
 6. View the predicted price increase, valuation metrics, and recommendations on the screen.
 
-```
 
-```
+
+gcloud auth login

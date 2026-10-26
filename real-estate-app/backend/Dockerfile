@@ -1,5 +1,10 @@
 # Use a lightweight Python base image
-FROM python:3.9-slim
+FROM docker.io/library/python:3.9-slim
+
+# Install system dependencies required for ML libraries (OpenMP)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
 WORKDIR /app
