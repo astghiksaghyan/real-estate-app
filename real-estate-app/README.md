@@ -86,26 +86,19 @@ venv\Scripts\activate
 
 ```
 
-
-
-
 3. Install the required Python dependencies:
 ```bash
 pip install -r requirements.txt
 
 ```
 
-
 4. Ensure your `listings.csv` file is placed inside the `backend/data/` folder.
+
 5. Run the Flask server:
 ```bash
 python app.py
 
 ```
-
-
-*The backend will start running at `h
-`.*
 
 ---
 
@@ -117,27 +110,23 @@ cd frontend
 
 ```
 
-
 2. Install the Node.js dependencies:
 ```bash
 npm install
 
 ```
-2. Generate tailwind.config.js and postcss.config.js
+3. Generate tailwind.config.js and postcss.config.js
 
 ```bash
 npx tailwindcss init -p
 
 ```
 
-
-
-3. Start the development server (using Vite):
+4. Start the development server (using Vite):
 ```bash
 npm run dev
 
 ```
-
 
 *Vite will typically output a local URL (e.g., `http://localhost:5173` or `http://localhost:3000`). Open it in your web browser.*
 
@@ -161,6 +150,33 @@ podman-compose -f docker-compose.yml up -d
 
 ```
 
+## 🚀 Deployment & Cloud Architecture
+
+This application is containerized using **Podman** and deployed as a decoupled microservices architecture on **Google Cloud Run**, backed by **Google Artifact Registry**.
+
+### Live Demo
+- **Frontend App:** [https://real-estate-frontend-699539648647.us-central1.run.app](https://real-estate-frontend-699539648647.us-central1.run.app)
+- **Backend API:** [https://real-estate-backend-699539648647.us-central1.run.app/api/listings](https://real-estate-backend-699539648647.us-central1.run.app/api/listings)
+
+### Manual Deployment Steps
+
+If you want to deploy this infrastructure yourself, follow these steps:
+
+1. Build and push the backend:
+```bash
+   podman build -t us-central1-docker.pkg.dev/<YOUR_PROJECT_ID>/<YOUR_REPO>/backend:latest .
+   podman push us-central1-docker.pkg.dev/<YOUR_PROJECT_ID>/<YOUR_REPO>/backend:latest
+
+2. Build and push the frontend (injecting the backend URL):
+```bash
+   podman build \
+      --build-arg VITE_API_URL=<YOUR_BACKEND_CLOUD_RUN_URL> \
+      -t us-central1-docker.pkg.dev/<YOUR_PROJECT_ID>/<YOUR_REPO>/frontend:latest .
+   podman push us-central1-docker.pkg.dev/<YOUR_PROJECT_ID>/<YOUR_REPO>/frontend:latest
+
+3. Deploy to Cloud Run:
+```bash
+   gcloud run deploy
 ---
 
 ## Usage Guide
@@ -171,7 +187,3 @@ podman-compose -f docker-compose.yml up -d
 4. Select a missing feature/improvement (e.g., "Վերանորոգում", "Կահույք", etc.).
 5. Click the **"Սկսել Վերլուծությունը"** (Start Analysis) button to trigger the machine learning models (Linear Regression, Random Forest, XGBoost).
 6. View the predicted price increase, valuation metrics, and recommendations on the screen.
-
-
-
-gcloud auth login

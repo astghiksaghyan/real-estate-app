@@ -1,8 +1,13 @@
 import pandas as pd
+import os
+from flask_cors import CORS
 from flask import Flask, jsonify, request
 from model import train_valuation_models, get_listings_sample, predict_amenity_impact, csv_path
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Initialize and train ML models on startup
 print("Initializing ML models...")
@@ -32,7 +37,9 @@ def analyze_amenity_impact():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    port = int(os.environ.get('PORT', 8080))
+    # Disable debug mode for production container environments
+    app.run(host='0.0.0.0', port=port, debug=False)
 
 
 

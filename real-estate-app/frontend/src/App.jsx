@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchListings, analyzePriceImpact } from '../services/api';
 
 export default function App() {
     const [listings, setListings] = useState([]);
@@ -9,17 +10,10 @@ export default function App() {
 
     // Fetch listings from the Flask backend on component mount
     useEffect(() => {
-        fetch('/api/listings')
-            .then((response) => {
-                const response_a = response.json()
-                return response_a
-            })
-            .then((data) => {
-                if (data && Array.isArray(data)) {
-                    setListings(data);
-                }
-            })
-            .catch((error) => console.error('Error fetching listings:', error));
+        fetchListings()
+        .then(data => setListings(data))
+        .catch(err => console.error(err))
+        .finally(() => setLoading(false));
     }, []);
 
     const handleSelectListing = (listing) => {
@@ -36,23 +30,8 @@ export default function App() {
         setAnalysisResult(null);
 
         try {
-            const response = await fetch('/api/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    listing: selectedListing,
-                    missingFeature: missingFeature,
-                }),
-            });
-
-        if (!response.ok) {
-            throw new Error('Server response was not ok');
-        }
-
-        const data = await response.json();
-        setAnalysisResult(data);
+            const data = await analyzePriceImpact(selectedListing, missingFeature);
+            setAnalysisResult(data);
         } catch (error) {
             console.error('Error analyzing price impact:', error);
         } finally {

@@ -9,6 +9,10 @@ RUN npm install
 # Copy the rest of the frontend source code
 COPY . .
 
+# Accept the build arg and set it as an environment variable for Vite
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the app (Vite generates the 'dist' folder)
 RUN npm run build
 
